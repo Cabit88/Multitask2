@@ -7,10 +7,25 @@ import javax.imageio.ImageIO;
 
 import com.github.forax.zen.ApplicationContext;
 
-public record Graphics(int x, int y, int width, int height) {
+public class Graphics {
+	public static final int MARGE = 130; // Espacement entre les boutons
+	public static final int BUTTON_HEIGHT = 50; // Hauteur de la bande du bouton
+	
+	public static boolean isClickOnPlay(int mouseX, int mouseY, int width, int height) {
+		return mouseX >= width/4 && mouseY >= height/2 && mouseX <= 3 * width/4 && mouseY <= height/2 + BUTTON_HEIGHT;
+	}
+
+	public static boolean isClickOnSetting(int mouseX, int mouseY, int width, int height) {
+		return mouseX >= width/4 && mouseY >= height/2 + MARGE && mouseX <= 3 * width/4 && mouseY <= height/2 + MARGE + BUTTON_HEIGHT;
+	}
+	
+	public static boolean isClickOnLeave(int mouseX, int mouseY, int width, int height) {
+		return mouseX >= width/4 && mouseY >= height/2 + 2*MARGE && mouseX <= 3 * width/4 && mouseY <= height/2 + 2*MARGE + BUTTON_HEIGHT;
+	}
+	
 	public static void drawGame1(ApplicationContext context, int width, int height, double angle, double ballPos, long time) {
         context.renderFrame(graphics -> {
-            graphics.setColor(new Color(52, 38, 28));
+            graphics.setColor(new Color(217, 102, 227));
             graphics.fillRect(0, 0, width, height);
             
             graphics.setColor(Color.BLACK);
@@ -64,14 +79,44 @@ public record Graphics(int x, int y, int width, int height) {
         }
     }
 
-    public static void drawMenu(ApplicationContext context, int width, int height, BufferedImage logo) {
+	public static void drawMenu(ApplicationContext context, int width, int height, BufferedImage logo) {
+        int buttonY1 = height/2;
+        int buttonY2 = height/2 + MARGE;
+        int buttonY3 = height/2 + 2*MARGE;
+
         context.renderFrame(graphics -> {
             graphics.setColor(new Color(203, 203, 203));
             graphics.fillRect(0, 0, width, height);
+            
+            graphics.setColor(Color.DARK_GRAY);
+            graphics.setFont(new Font("Arial", Font.BOLD, 16));
+            graphics.drawString("By MASSIP-SOUECHRE A. and PLUVINET-VIAENE A.", 10, height - 15);
 
             if (logo != null) {
-                graphics.drawImage(logo, width / 2 - 200, 50, 400, 150, null);
+                graphics.drawImage(logo, width / 2 - 300, 30, 600, 300, null);
             }
+            
+            // Bonton Jouer
+            graphics.setColor(new Color(0, 0, 0, 100));
+            graphics.fillRect(width/4, buttonY1, width/2, BUTTON_HEIGHT);
+            
+            graphics.setColor(Color.WHITE);
+            graphics.setFont(new Font("Arial", Font.BOLD, 28));
+            graphics.drawString("JOUER", width/2 - 45, buttonY1 + 35);
+            
+            // Bouton Paramètres
+            graphics.setColor(new Color(0, 0, 0, 100));
+            graphics.fillRect(width/4, buttonY2, width/2, BUTTON_HEIGHT);
+            
+            graphics.setColor(Color.WHITE);
+            graphics.drawString("PARAMÈTRES", width/2 - 80, buttonY2 + 35);
+            
+            // Bouton Quitter
+            graphics.setColor(new Color(0, 0, 0, 100));
+            graphics.fillRect(width/4, buttonY3, width/2, BUTTON_HEIGHT);
+            
+            graphics.setColor(Color.WHITE);
+            graphics.drawString("QUITTER", width/2 - 55, buttonY3 + 35);
         });
     }
 	
