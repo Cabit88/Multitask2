@@ -9,35 +9,67 @@ import com.github.forax.zen.PointerEvent;
 import java.awt.*;
 
 public class Main {
+	public static final long startTime = System.currentTimeMillis();
+	
+	public static long getScore() {
+        return (System.currentTimeMillis() - startTime) / 1000;
+    }
+	
+	private static boolean handleMenuChoice(ApplicationContext context, int width, int height, int position) {
+	    switch(position) {
+	        case 1 -> game(context, width, height);
+	        case 2 -> IO.println("HELLLOOOOOOOOOOOOOOOOO");
+	        case 3 -> {
+	            context.dispose();
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
 	public static void menu(ApplicationContext context) {
 	    var screenInfo = context.getScreenInfo();
 	    var width = screenInfo.width();
 	    var height = screenInfo.height();
 
-	    var logo = Graphics.loadImage("/data/logo.jpeg"); 
+	    var logo = Graphics.loadImage("/data/logo.jpeg");
+	    var position = 1; // position du rectangle rouge
 	    
 	    while(true) {
-	    	Graphics.drawMenu(context, width, height, logo);
+	    	Graphics.drawMenu(context, width, height, logo, position);
 	    	Event event = context.pollOrWaitEvent(16);
-	    	if (event instanceof PointerEvent pe) {
+	    	if(event instanceof KeyboardEvent ke) {
+	    		if(ke.action() == KeyboardEvent.Action.KEY_PRESSED) {
+	    			if (ke.key() == KeyboardEvent.Key.Z || ke.key() == KeyboardEvent.Key.UP) {
+		    			position--;
+		    			if(position < 1) {
+		    				position = 3;
+		    			}
+		    		} else if (ke.key() == KeyboardEvent.Key.S || ke.key() == KeyboardEvent.Key.DOWN) {
+		    			position++;
+		    			if(position > 3) {
+		    				position = 1;
+		    			}
+		    		} else if(ke.key() == KeyboardEvent.Key.SPACE) {
+		    			if (handleMenuChoice(context, width, height, position)){
+		    				return;
+		    			}
+		    		}
+	    		}
+            } else if (event instanceof PointerEvent pe) {
 		        PointerEvent.Action action = pe.action();
-		        
+		        var location = pe.location();
+	            var x = location.x();
+	            var y = location.y();
+	            position = Graphics.buttonMenu(width, height, x, y);
+	            
 		        if (action == PointerEvent.Action.POINTER_DOWN) {
-		            var location = pe.location();
-		            var x = location.x();
-		            var y = location.y();
-		            
-		            if(Graphics.isClickOnPlay(x, y, width, height)) {
-		            	game(context, width, height);
-		            } else if(Graphics.isClickOnSetting(x, y, width, height)) {
-		            	IO.println("HELLOOOOOOOOOOOOOOOOO");
-		            } else if(Graphics.isClickOnLeave(x, y, width, height)) {
-		            	context.dispose();
-		            	return;
-		            }
+		        	if (position != -1 && handleMenuChoice(context, width, height, position)) {
+		        		return;
+		        	}
 		        }
 	    	}
-	    
+	    	
 	    }
 	}
 	
@@ -47,7 +79,7 @@ public class Main {
             game.update();
             
             if(game.isGameOver()) {
-                Graphics.gameLose(context, width, height, game.getScore());
+                Graphics.drawGameLose(context, width, height, getScore());
                 while(true) {
                     var event = context.pollOrWaitEvent(16);
                     if(event != null) {
@@ -56,11 +88,15 @@ public class Main {
                 }
             }
             
-            game.draw(context, 0, 0, width, height);
+            long time = (System.currentTimeMillis() - startTime) / 1000;
+            Graphics.drawHeader(context, width, height, time);
+            game.draw(context, 0, 50, width, height - 50);
             
             Event event = context.pollOrWaitEvent(16);
             if(event instanceof KeyboardEvent ke) {
-                game.handleKeyPress(ke.key());
+            	if (ke.action() == KeyboardEvent.Action.KEY_PRESSED) {
+                    game.handleKeyPress(ke.key());
+                }
             } else if (event instanceof PointerEvent pe) {
                 if (pe.action() == PointerEvent.Action.POINTER_DOWN) {
                     return;
