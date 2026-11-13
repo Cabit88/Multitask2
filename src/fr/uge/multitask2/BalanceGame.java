@@ -8,7 +8,7 @@ public class BalanceGame implements MiniGame {
     private double angle = 0;
     private double ballPos = 0;
     private double ballVelocity = 0;
-    private final long startTime = System.currentTimeMillis();
+    
 
     @Override
     public void update() {
@@ -16,27 +16,30 @@ public class BalanceGame implements MiniGame {
         ballVelocity *= 0.9;
         ballPos += ballVelocity;
         
-        // Balance la balance
+        // Balance la balance...
         if (ballPos < 0) {
             angle -= 0.0005;
         } else {
             angle += 0.0005;
         }
+        
+        // mais la limite a 45°
+        double maxAngle = Math.PI/4;
+        if (angle > maxAngle) {
+            angle = maxAngle;
+        } else if (angle < -maxAngle) {
+            angle = -maxAngle;
+        }
     }
 
     @Override
     public void draw(ApplicationContext context, int startX, int startY, int width, int height) {
-        long time = (System.currentTimeMillis() - startTime) / 1000;
-        
         context.renderFrame(graphics -> {
             graphics.setColor(new Color(217, 102, 227));
             graphics.fillRect(startX, startY, width, height);
 
             graphics.setColor(Color.BLACK);
             graphics.setStroke(new BasicStroke(5.0f));
-
-            graphics.setFont(new Font("Arial", Font.BOLD, 24));
-            graphics.drawString("Temps : " + time + "s", startX + 10, startY + 80);
 
             int centerX = startX + width / 2;
             int centerY = startY + height / 2;
@@ -54,10 +57,6 @@ public class BalanceGame implements MiniGame {
 
             graphics.setColor(Color.RED);
             graphics.fillOval(ballX - 20, ballY - 40, 40, 40);
-
-            graphics.setColor(Color.DARK_GRAY);
-            graphics.setFont(new Font("Arial", Font.BOLD, 28));
-            graphics.drawString("Touche balance : ← gauche, droite → ", startX + 10, startY + 40);
         });
     }
 
@@ -73,9 +72,5 @@ public class BalanceGame implements MiniGame {
     @Override
     public boolean isGameOver() {
         return ballPos > 160 || ballPos < -160;
-    }
-
-    public long getScore() {
-        return (System.currentTimeMillis() - startTime) / 1000;
     }
 }
