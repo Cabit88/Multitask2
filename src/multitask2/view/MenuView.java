@@ -85,17 +85,43 @@ public final class MenuView {
         });
     }
 	
-	public static void drawGameLose(ApplicationContext context, int width, int height, long score) {
+	public static void drawGameLose(ApplicationContext context, int width, int height, long score, int position) {
 		context.renderFrame(graphics -> {
 			graphics.setColor(Color.WHITE);
-			graphics.fillRect(width/4, height/3, width/2, height/3);
+			graphics.fillRect(width/4, 100, width/2, 150);
 			
 			graphics.setColor(Color.DARK_GRAY);
             graphics.setFont(new Font("Arial", Font.BOLD, 32));
-            graphics.drawString("PERDU !!", width/2 - 50, height/2);
-            graphics.drawString("Score : " + score, width/2 - 50, height/2 + 50);
-
+            graphics.drawString("Ton score est", width/2 - 100, 150);
+            graphics.drawString("" + score, width/2 - 10, 210);
+            
+            String[] choice = {"Rejouer", "Retour au Menu", "Quitter"};
+            var startY = 200;
+            for(int i = 0; i < choice.length; i++) {
+            	startY += MARGE;
+            	
+            	graphics.setColor(Color.WHITE);
+            	graphics.fillRect(width/2 - 250, startY, width/2 - 250, BUTTON_HEIGHT);
+            	
+            	graphics.setColor(Color.BLACK);
+            	graphics.drawString(choice[i], width/2 - 50, startY + 35);
+            	if(position == i+1) {
+                	graphics.setColor(Color.RED);
+                	graphics.drawRect(width/2 - 250, startY, width/2 - 250, BUTTON_HEIGHT);
+                }
+            }
 		});
+	}
+	
+	public static int buttonLose(int width, int height, double mouseX, double mouseY) {
+	    if (mouseX >= width/2 - 250 && mouseY >= 200 + MARGE && mouseX <= 2 * (width/2 - 250) && mouseY <= 200 + MARGE + BUTTON_HEIGHT) {
+	      return 1; // Rejouer
+	    } else if (mouseX >= width/2 - 250 && mouseY >= 200 + 2*MARGE && mouseX <= 2 * (width/2 - 250) && mouseY <= 200 + 2*MARGE + BUTTON_HEIGHT) {
+	      return 2; // Retour au Menu
+	    } else if (mouseX >= width/2 - 250 && mouseY >= 200 + 3*MARGE && mouseX <= 2 * (width/2 - 250) && mouseY <= 200 + 3*MARGE + BUTTON_HEIGHT) {
+	      return 3; // Quitter
+	    }
+	    return -1; // error
 	}
 	
 }
