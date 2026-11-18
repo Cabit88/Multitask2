@@ -78,7 +78,7 @@ public final class Main {
       case 1 -> game(context);
       case 2 -> IO.println("HELLLOOOOOOOOOOOOOOOOO");
       case 3 -> {
-    	context.dispose();
+        context.dispose();
         return true;
       }
     }
@@ -86,35 +86,58 @@ public final class Main {
   }
   
   private static void menu(ApplicationContext context) {
-	  var screen = context.getScreenInfo();
-	  var width = screen.width();
-	  var height = screen.height();
-	  
-	  var logo = MenuView.loadImage("/multitask2/view/data/logo.jpeg");
-	  
-	  int pos = 1; // position du rectangle rouge
-	  
-	  while(true) {
-		  MenuView.drawMenu(context, width, height, logo, pos);
-		  var event = context.pollOrWaitEvent(16);
-		  
-		  pos = updateMenuPosition(event, width, height, pos);
-		  if (isMenuValidated(event, pos)) {
-	        if (handleMenuChoice(context, width, height, pos)) {
-	          context.dispose();
-	          return;
-	        }
-	      }
-	  }
+    var screen = context.getScreenInfo();
+    var width = screen.width();
+    var height = screen.height();
+    
+    var logo = MenuView.loadImage("/multitask2/view/data/logo.jpeg");
+    int pos = 1;
+    
+    while(true) {
+      MenuView.drawMenu(context, width, height, logo, pos);
+      var event = context.pollOrWaitEvent(16);
+      
+      pos = updateMenuPosition(event, width, height, pos);
+      if (isMenuValidated(event, pos)) {
+        if (handleMenuChoice(context, width, height, pos)) {
+          return;
+        }
+      }
+    }
   }
   
-  private static void showLoseScreen(ApplicationContext context, int width, int height, int score) {
-    MenuView.drawGameLose(context, width, height, score);
+  private static int updateLosePosition(Event event, int width, int height, int pos) {
+    if (event instanceof KeyboardEvent ke && ke.action() == Action.KEY_PRESSED) {
+      if (ke.key() == Key.Z || ke.key() == Key.UP) {
+        return pos <= 1 ? 3 : pos - 1;
+      }
+      if (ke.key() == Key.S || ke.key() == Key.DOWN) {
+        return pos >= 3 ? 1 : pos + 1;
+      }
+    } else if (event instanceof PointerEvent pe) {
+      int hovered = MenuView.buttonLose(width, height, pe.location().x(), pe.location().y());
+      return hovered != -1 ? hovered : pos;
+    }
+    return pos;
+  }
+
+  private static void showLoseScreen(ApplicationContext context, int width, int height, long score) {
+    int pos = 1;
     while (true) {
+      MenuView.drawGameLose(context, width, height, score, pos);
       var event = context.pollOrWaitEvent(16);
-      if (event != null && (event instanceof KeyboardEvent ke && ke.action() == Action.KEY_PRESSED
-          || event instanceof PointerEvent pe && pe.action() == PointerEvent.Action.POINTER_DOWN)) {
-    	return;
+      
+      pos = updateLosePosition(event, width, height, pos);
+      if (isMenuValidated(event, pos)) {
+        if (pos == 1) { // Relance la partie
+          game(context);
+          return;
+        } else if (pos == 2) { // Revient au menu
+          return; 
+        } else if (pos == 3) { // Quitte le jeu
+          context.dispose();
+          System.exit(0);
+        }
       }
     }
   }
@@ -142,7 +165,6 @@ public final class Main {
       var screen = context.getScreenInfo();
       showLoseScreen(context, screen.width(), screen.height(), model.time());
     }
-    
   }
 
   /**
