@@ -1,7 +1,7 @@
 package multitask2.view;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import module java.base;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
@@ -70,7 +70,7 @@ public final class MenuView {
             }
             
             graphics.setColor(Color.WHITE);
-            graphics.drawString("PARAMÈTRES", width/2 - 80, buttonY2 + 35);
+            graphics.drawString("AIDE", width/2 - 35, buttonY2 + 35);
             
             // Bouton Quitter
             graphics.setColor(new Color(0, 0, 0, 100));

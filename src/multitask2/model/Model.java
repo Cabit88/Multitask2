@@ -5,7 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.github.forax.zen.KeyboardEvent.Key;
+
 import multitask2.controller.Input;
+import multitask2.controller.KeyBindings;
 
 /**
  * Modèle central de la partie : conserve les mini-jeux, les active à leur
@@ -28,7 +31,6 @@ public final class Model {
   public Model() {
     slots = new ArrayList<>();
     elapsedTime = 0;
-    super();
   }
 
   /**
@@ -46,6 +48,17 @@ public final class Model {
       throw new IllegalArgumentException("Activation time cannot be negative.");
     }
     slots.add(new Slot(game, activationTime));
+  }
+
+  private void toggleTestTasks(Input input) {
+    Key[] keys = {KeyBindings.testTask1(), KeyBindings.testTask2(), KeyBindings.testTask3(),
+        KeyBindings.testTask4(), KeyBindings.testTask5(), KeyBindings.testTask6()};
+    for (var i = 0; i < keys.length && i < slots.size(); i++) {
+      if (input.isKeyJustPressed(keys[i])) {
+        var slot = slots.get(i);
+        slot.setActive(!slot.active());
+      }
+    }
   }
 
   /**
@@ -73,10 +86,11 @@ public final class Model {
     Objects.requireNonNull(input);
 
     elapsedTime += dt;
+    toggleTestTasks(input);
     var difficulty = elapsedTime / 5;
 
     for (var slot : slots) {
-      if (!slot.active() && elapsedTime >= slot.activationTime()) {
+      if (!slot.active() && !slot.manuallyControlled() && elapsedTime >= slot.activationTime()) {
         slot.start();
       }
       if (slot.active()) {

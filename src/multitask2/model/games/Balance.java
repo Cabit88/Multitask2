@@ -3,6 +3,7 @@ package multitask2.model.games;
 import com.github.forax.zen.KeyboardEvent.Key;
 
 import multitask2.controller.Input;
+import multitask2.controller.KeyBindings;
 import multitask2.model.Game;
 
 /**
@@ -43,7 +44,6 @@ public final class Balance implements Game {
     position = 0;
     speed = 0;
     tilt = 0;
-    super();
   }
 
   /**
@@ -77,7 +77,7 @@ public final class Balance implements Game {
    * @param input état des entrées clavier
    */
   private void readInput(double dt, Input input) {
-    var dir = (input.isKeyDown(Key.LEFT) ? -1 : 0) + (input.isKeyDown(Key.RIGHT) ? 1 : 0);
+    var dir = (input.isKeyDown(KeyBindings.left()) ? -1 : 0) + (input.isKeyDown(KeyBindings.right()) ? 1 : 0);
     if (dir != 0) {
       tilt = Game.dontExceed(tilt + dir * TILT_SPEED_DEG_PER_SEC * dt, MAX_TILT_DEGREES);
     }

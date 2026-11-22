@@ -31,7 +31,6 @@ public final class Input {
   public Input() {
     keysDown = new HashSet<Key>();
     keysPressed = new HashSet<Key>();
-    super();
   }
 
   /**

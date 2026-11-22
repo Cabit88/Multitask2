@@ -26,7 +26,6 @@ public final class BalanceView implements GameView {
   public BalanceView(Balance balance) {
     Objects.requireNonNull(balance);
     this.balance = balance;
-    super();
   }
 
   /**

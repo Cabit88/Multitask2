@@ -15,6 +15,8 @@ public final class Slot {
   private final int activationTime;
   /** Indique si l'instant d'activation a été atteint. */
   private boolean active;
+  /** Indique que l'état a été changé explicitement pour les tests. */
+  private boolean manuallyControlled;
 
   /**
    * Crée un emplacement inactif pour le mini-jeu et l'échéance donnés.
@@ -23,10 +25,11 @@ public final class Slot {
    * @param time     instant d'activation, en secondes
    */
   Slot(Game miniGame, int time) {
+    super();
     game = miniGame;
     activationTime = time;
     active = false;
-    super();
+    manuallyControlled = false;
   }
 
   /**
@@ -62,5 +65,16 @@ public final class Slot {
    */
   public boolean active() {
     return active;
+  }
+
+  /** Change explicitement l'état actif, notamment pour les tests. */
+  public void setActive(boolean value) {
+    active = value;
+    manuallyControlled = true;
+  }
+
+  /** Indique si l'activation doit être gérée par le jeu automatique. */
+  public boolean manuallyControlled() {
+    return manuallyControlled;
   }
 }

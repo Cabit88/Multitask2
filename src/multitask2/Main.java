@@ -15,11 +15,19 @@ import multitask2.model.Game;
 import multitask2.model.Model;
 import multitask2.model.games.Avoid;
 import multitask2.model.games.Balance;
+import multitask2.model.games.Circle;
+import multitask2.model.games.Fly;
+import multitask2.model.games.Jump;
+import multitask2.model.games.Touch;
 import multitask2.view.GeneralView;
 import multitask2.view.MenuView;
 import multitask2.view.Viewers;
 import multitask2.view.games.AvoidView;
 import multitask2.view.games.BalanceView;
+import multitask2.view.games.CircleView;
+import multitask2.view.games.FlyView;
+import multitask2.view.games.JumpView;
+import multitask2.view.games.TouchView;
 import multitask2.view.games.GameView;
 
 /**
@@ -37,9 +45,7 @@ public final class Main {
    * Constructeur privé afin d'empêcher l'instanciation de cette classe
    * utilitaire.
    */
-  private Main() {
-    super();
-  }
+  private Main() {}
 
   /**
    * Lance la boucle de l'application graphique.
@@ -76,7 +82,7 @@ public final class Main {
   private static boolean handleMenuChoice(ApplicationContext context, int width, int height, int pos) {
     switch (pos) {
       case 1 -> game(context);
-      case 2 -> IO.println("HELLLOOOOOOOOOOOOOOOOO");
+      case 2 -> showHelp(context);
       case 3 -> {
         context.dispose();
         return true;
@@ -85,6 +91,31 @@ public final class Main {
     return false;
   }
   
+  private static void showHelp(ApplicationContext context) {
+    var screen = context.getScreenInfo();
+    var width = screen.width();
+    var height = screen.height();
+    while (true) {
+      context.renderFrame(graphics -> drawHelp(graphics, width, height));
+      var event = context.pollOrWaitEvent(16);
+      if (event instanceof KeyboardEvent ke && ke.action() == Action.KEY_PRESSED
+          && (ke.key() == Key.ESCAPE || ke.key() == Key.SPACE)) return;
+    }
+  }
+
+  private static void drawHelp(java.awt.Graphics2D graphics, int width, int height) {
+    graphics.setColor(GeneralView.BACKGROUND);
+    graphics.fillRect(0, 0, width, height);
+    graphics.setColor(java.awt.Color.WHITE);
+    graphics.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
+    var lines = new String[] {"AIDE", "Balance : ← →", "Avoid : ↑ ↓",     "Touch : ZQSD (AZERTY)",
+        "Fly : Espace", "Jump : Maj", "Circle : Q/E ou A/E",
+        "Test : W/X/C/V/B/N pour activer chaque jeu", "Echap ou Espace : revenir"};
+    for (var i = 0; i < lines.length; i++) {
+      graphics.drawString(lines[i], 100, 100 + i * 45);
+    }
+  }
+
   private static void menu(ApplicationContext context) {
     var screen = context.getScreenInfo();
     var width = screen.width();
@@ -155,6 +186,10 @@ public final class Main {
     var viewers = new Viewers();
     addGame(model, viewers, new Balance(), 0, BalanceView::new);
     addGame(model, viewers, new Avoid(), 5, AvoidView::new);
+    addGame(model, viewers, new Touch(), 10, TouchView::new);
+    addGame(model, viewers, new Fly(), 15, FlyView::new);
+    addGame(model, viewers, new Jump(), 20, JumpView::new);
+    addGame(model, viewers, new Circle(), 25, CircleView::new);
 
     var view = new GeneralView(context, viewers);
     var controller = new Controller(model, view, context);

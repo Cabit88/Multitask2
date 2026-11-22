@@ -26,7 +26,6 @@ public final class AvoidView implements GameView {
   public AvoidView(Avoid avoider) {
     Objects.requireNonNull(avoider);
     this.avoider = avoider;
-    super();
   }
 
   /**

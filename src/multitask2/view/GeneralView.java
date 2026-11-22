@@ -53,7 +53,6 @@ public final class GeneralView implements View {
     var screen = context.getScreenInfo();
     width = screen.width();
     height = screen.height();
-    super();
   }
 
   /**

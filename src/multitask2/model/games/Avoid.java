@@ -1,6 +1,7 @@
 package multitask2.model.games;
 
 import multitask2.controller.Input;
+import multitask2.controller.KeyBindings;
 import multitask2.model.Game;
 
 import java.util.ArrayList;
@@ -69,7 +70,6 @@ public final class Avoid implements Game {
     missiles = new ArrayList<>();
     spawnTimer = 1;
     random = new Random();
-    super();
   }
 
   /**
@@ -103,7 +103,7 @@ public final class Avoid implements Game {
    * @param input état des entrées clavier
    */
   private void readInput(Input input) {
-    var dir = (input.isKeyJustPressed(Key.UP) ? 1 : 0) + (input.isKeyJustPressed(Key.DOWN) ? -1 : 0);
+    var dir = (input.isKeyJustPressed(KeyBindings.up()) ? 1 : 0) + (input.isKeyJustPressed(KeyBindings.down()) ? -1 : 0);
     if (dir != 0) {
       row = Game.withinBounds(row + dir, 0, ROWS - 1);
     }
