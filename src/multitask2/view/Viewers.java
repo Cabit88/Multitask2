@@ -19,6 +19,7 @@ public final class Viewers {
   /** Crée un registre vide de vues de mini-jeux. */
   public Viewers() {
     viewer = new HashMap<>();
+    super();
   }
 
   /**
