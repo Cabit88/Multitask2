@@ -31,6 +31,7 @@ public final class Model {
   public Model() {
     slots = new ArrayList<>();
     elapsedTime = 0;
+    super();
   }
 
   /**
