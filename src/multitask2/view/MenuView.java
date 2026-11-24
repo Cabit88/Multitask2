@@ -124,4 +124,27 @@ public final class MenuView {
 	    return -1; // error
 	}
 	
+	public static void drawHelp(Graphics2D graphics, int width, int height) {
+	    graphics.setColor(GeneralView.BACKGROUND);
+	    graphics.fillRect(0, 0, width, height);
+	    graphics.setColor(Color.WHITE);
+	    graphics.setFont(new Font("Arial", Font.BOLD, 24));
+	    var lines = new String[] {
+	    		"AIDE :",
+	    		"Balance : ← →, Garder une bille sur une planche que l’on incline.",
+	    		"Avoid : ↑ ↓, Esquiver des triangles qui arrivent sur l’une des cinq lignes.",
+	    		"Touch : ZQSD (AZERTY), Déplacer un carré pour toucher des blocs avant la fin de leur compte à rebours.",
+	    		"Fly : Espace, Maintenir la touche pour monter, la relˆacher pour descendre, et éviter les obstacles.",
+	    		"Jump : Maj, Sauter au bon moment par-dessus des trous dans le sol.",
+	    		"Circle : Q/E, Faire tourner un cercle percé autour de son centre pour capturer des triangles qui arrivent de toutes les directions.",
+	    		"Test : W/X/C/V/B/N pour activer chaque jeu",
+	        	"Echap ou Espace : revenir au menu"};
+	    for (var i = 0; i < lines.length; i++) {
+	      if(i == lines.length-1) {
+	    	  graphics.setColor(Color.RED);
+	      }
+	      graphics.drawString(lines[i], 50, 50 + i * 100);
+	    }
+	  }
+	
 }
