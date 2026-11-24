@@ -9,8 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import com.github.forax.zen.KeyboardEvent.Key;
-
 /**
  * Mini-jeu d'esquive : le joueur change de rangée pour éviter des missiles qui
  * traversent horizontalement la zone de jeu de gauche à droite.
@@ -70,6 +68,7 @@ public final class Avoid implements Game {
     missiles = new ArrayList<>();
     spawnTimer = 1;
     random = new Random();
+    super();
   }
 
   /**
