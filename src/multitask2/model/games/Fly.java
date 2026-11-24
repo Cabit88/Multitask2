@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import com.github.forax.zen.KeyboardEvent.Key;
-
 import multitask2.controller.Input;
 import multitask2.controller.KeyBindings;
 import multitask2.model.Game;
@@ -16,20 +14,29 @@ public final class Fly implements Game {
   public static final int WIDTH = 100;
   public static final int HEIGHT = 100;
 
-  public record Pillar(double x, double gapY, double gapHeight) {}
-
+  public record Pillar(double x, double y, double height) {}
+  
+  /* Position de la balle */
   private double y;
+  
+  /* Vitesse de la balle */
   private double velocity;
+  
+  /* Liste des piliers */
   private final List<Pillar> pillars;
+  
+  /* temps restant avant le prochain pilier */
   private double spawnTimer;
+  
   private final Random random;
 
   public Fly() {
     y = 50;
     velocity = 0;
     pillars = new ArrayList<>();
-    spawnTimer = 1.5;
+    spawnTimer = 5;
     random = new Random();
+    super();
   }
 
   @Override
@@ -37,41 +44,53 @@ public final class Fly implements Game {
     Game.checkInput(dt, input, difficulty);
     updateHeight(dt, input);
     updatePillars(dt, difficulty);
-    return y >= 0 && y <= HEIGHT && !collision();
+    return !collision();
   }
 
   private void updateHeight(double dt, Input input) {
     velocity += (input.isKeyDown(KeyBindings.fly()) ? -38 : 24) * dt;
     velocity = Game.dontExceed(velocity, 34);
     y += velocity * dt;
+    // Le plafond ne fait pas perdre
+    if(y < 5) {
+      y = 5;
+      velocity = 0;
+    }
+    // Le sol ne fait pas perdre
+    if(y > HEIGHT) {
+      y = HEIGHT;
+      velocity = 0;
+    }
   }
 
   private void updatePillars(double dt, double difficulty) {
     // cree des obstacles puis les fait aller vers la gauche
     spawnTimer -= dt;
     if (spawnTimer <= 0) {
-      var gap = Math.max(24, 38 - difficulty);
-      var gapY = 15 + random.nextInt(71);
-      pillars.add(new Pillar(WIDTH, gapY, gap));
-      spawnTimer = Math.max(1.0, 2.0 - difficulty * 0.05);
+      var barHeight = 20 + random.nextInt(15);
+      var barY = 20 + random.nextInt(61);
+      pillars.add(new Pillar(WIDTH, barY, barHeight));
+      spawnTimer = Math.max(2.0, 5.0 - difficulty * 0.05);
     }
-    pillars.replaceAll(pillar -> new Pillar(pillar.x() - (28 + difficulty * 5) * dt,
-        pillar.gapY(), pillar.gapHeight()));
+    pillars.replaceAll(pillar -> new Pillar(pillar.x() - (18 + difficulty * 3) * dt, pillar.y(), pillar.height()));
     pillars.removeIf(pillar -> pillar.x() < -10);
   }
 
   private boolean collision() {
-    // perd si on touche un obstacle hors du trou
+    // Vérifie si la balle touche un pilier
     for (var pillar : pillars) {
-      if (pillar.x() < 12 && pillar.x() > -12
-          && (y < pillar.gapY() - pillar.gapHeight() / 2
-          || y > pillar.gapY() + pillar.gapHeight() / 2)) {
+      if (pillar.x() < 12 && pillar.x() > -12 && Math.abs(y - pillar.y()) <= pillar.height()/2.0) {
         return true;
       }
     }
     return false;
   }
 
-  public double y() { return y; }
-  public List<Pillar> pillars() { return Collections.unmodifiableList(pillars); }
+  public double y() { 
+	  return y; 
+  }
+  
+  public List<Pillar> pillars() { 
+	  return Collections.unmodifiableList(pillars);
+  }
 }
