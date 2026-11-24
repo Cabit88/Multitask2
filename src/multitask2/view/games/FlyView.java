@@ -13,27 +13,32 @@ public final class FlyView implements GameView {
   public FlyView(Fly fly) {
     Objects.requireNonNull(fly);
     this.fly = fly;
+    super();
   }
 
   @Override
   public void render(Graphics2D graphics, Rectangle area) {
     GameView.checkInput(graphics, fly, area);
+    
     var sx = area.width / (double) Fly.WIDTH;
     var sy = area.height / (double) Fly.HEIGHT;
+    
+    // background
     graphics.setColor(new Color(95, 150, 210));
     graphics.fillRect(area.x, area.y, area.width, area.height);
-
+    
+    // dessine les barres
     graphics.setColor(new Color(50, 90, 55));
     for (var pillar : fly.pillars()) {
       var px = area.x + (int) (pillar.x() * sx);
-      var center = area.y + (int) (pillar.gapY() * sy);
-      var gap = (int) (pillar.gapHeight() * sy);
-      graphics.fillRect(px - 5, area.y, 10, center - gap / 2 - area.y);
-      graphics.fillRect(px - 5, center + gap / 2, 10, area.y + area.height - center - gap / 2);
+      var ph = (int) (pillar.height() * sy);
+      var py = area.y + (int) (pillar.y() * sy) - ph / 2;
+      graphics.fillRect(px - 4, py, 8, ph);
     }
-
+    
+    // dessine la balle du joueur
     graphics.setColor(Color.WHITE);
-    var py = area.y + (int) (fly.y() * sy);
-    graphics.fillOval(area.x + 20, py - 7, 14, 14);
+    var ballY = area.y + (int) (fly.y() * sy);
+    graphics.fillOval(area.x + 20, ballY - 14, 14, 14);
   }
 }
