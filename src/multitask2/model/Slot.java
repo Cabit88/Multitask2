@@ -25,11 +25,11 @@ public final class Slot {
    * @param time     instant d'activation, en secondes
    */
   Slot(Game miniGame, int time) {
-    super();
     game = miniGame;
     activationTime = time;
     active = false;
     manuallyControlled = false;
+    super();
   }
 
   /**
