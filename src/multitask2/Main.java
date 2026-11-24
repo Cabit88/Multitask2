@@ -11,6 +11,7 @@ import com.github.forax.zen.KeyboardEvent.Key;
 import com.github.forax.zen.PointerEvent;
 
 import multitask2.controller.Controller;
+import multitask2.controller.KeyBindings;
 import multitask2.model.Game;
 import multitask2.model.Model;
 import multitask2.model.games.Avoid;
@@ -26,9 +27,9 @@ import multitask2.view.games.AvoidView;
 import multitask2.view.games.BalanceView;
 import multitask2.view.games.CircleView;
 import multitask2.view.games.FlyView;
+import multitask2.view.games.GameView;
 import multitask2.view.games.JumpView;
 import multitask2.view.games.TouchView;
-import multitask2.view.games.GameView;
 
 /**
  * Point d'entrée de l'application de mini-jeux multitâches.
@@ -45,7 +46,9 @@ public final class Main {
    * Constructeur privé afin d'empêcher l'instanciation de cette classe
    * utilitaire.
    */
-  private Main() {}
+  private Main() {
+	  super();
+  }
 
   /**
    * Lance la boucle de l'application graphique.
@@ -57,12 +60,13 @@ public final class Main {
     Application.run(GeneralView.BACKGROUND, Main::menu);
   }
   
+  /* Met a jour l'option sélectionné du menu */
   private static int updateMenuPosition(Event event, int width, int height, int pos) {
     if (event instanceof KeyboardEvent ke && ke.action() == Action.KEY_PRESSED) {
-      if (ke.key() == Key.Z || ke.key() == Key.UP) {
+      if (ke.key() == KeyBindings.touchUp() || ke.key() == KeyBindings.up()) {
         return pos <= 1 ? 3 : pos - 1;
       }
-      if (ke.key() == Key.S || ke.key() == Key.DOWN) {
+      if (ke.key() == KeyBindings.touchDown() || ke.key() == KeyBindings.down()) {
         return pos >= 3 ? 1 : pos + 1;
       }
     } else if (event instanceof PointerEvent pe) {
@@ -72,6 +76,7 @@ public final class Main {
     return pos;
   }
   
+  /* Vérifie si le joueur valide le choix pris */
   private static boolean isMenuValidated(Event event, int pos) {
     if (event instanceof KeyboardEvent ke && ke.action() == Action.KEY_PRESSED) {
       return ke.key() == Key.SPACE;
@@ -79,6 +84,7 @@ public final class Main {
     return event instanceof PointerEvent pe && pe.action() == PointerEvent.Action.POINTER_DOWN && pos != -1;
   }
   
+  /* Execute l'action du choix validé au menu */
   private static boolean handleMenuChoice(ApplicationContext context, int width, int height, int pos) {
     switch (pos) {
       case 1 -> game(context);
@@ -91,36 +97,26 @@ public final class Main {
     return false;
   }
   
+  /* Affiche l'écran d'aide */
   private static void showHelp(ApplicationContext context) {
     var screen = context.getScreenInfo();
     var width = screen.width();
     var height = screen.height();
     while (true) {
-      context.renderFrame(graphics -> drawHelp(graphics, width, height));
+      context.renderFrame(graphics -> MenuView.drawHelp(graphics, width, height));
       var event = context.pollOrWaitEvent(16);
       if (event instanceof KeyboardEvent ke && ke.action() == Action.KEY_PRESSED
           && (ke.key() == Key.ESCAPE || ke.key() == Key.SPACE)) return;
     }
   }
-
-  private static void drawHelp(java.awt.Graphics2D graphics, int width, int height) {
-    graphics.setColor(GeneralView.BACKGROUND);
-    graphics.fillRect(0, 0, width, height);
-    graphics.setColor(java.awt.Color.WHITE);
-    graphics.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
-    var lines = new String[] {"AIDE", "Balance : ← →", "Avoid : ↑ ↓",     "Touch : ZQSD (AZERTY)",
-        "Fly : Espace", "Jump : Maj", "Circle : Q/E ou A/E",
-        "Test : W/X/C/V/B/N pour activer chaque jeu", "Echap ou Espace : revenir"};
-    for (var i = 0; i < lines.length; i++) {
-      graphics.drawString(lines[i], 100, 100 + i * 45);
-    }
-  }
-
+  
+  /* Affiche le menu + gere les interactions desssus */
   private static void menu(ApplicationContext context) {
     var screen = context.getScreenInfo();
     var width = screen.width();
     var height = screen.height();
     
+    // pour charger le logo du jeu
     var logo = MenuView.loadImage("/multitask2/view/data/logo.jpeg");
     int pos = 1;
     
@@ -137,12 +133,13 @@ public final class Main {
     }
   }
   
+  /* Met a jour le choix selectionné du menu de l'écran défaite */
   private static int updateLosePosition(Event event, int width, int height, int pos) {
     if (event instanceof KeyboardEvent ke && ke.action() == Action.KEY_PRESSED) {
-      if (ke.key() == Key.Z || ke.key() == Key.UP) {
+      if (ke.key() == KeyBindings.touchUp() || ke.key() == KeyBindings.up()) {
         return pos <= 1 ? 3 : pos - 1;
       }
-      if (ke.key() == Key.S || ke.key() == Key.DOWN) {
+      if (ke.key() == KeyBindings.touchDown() || ke.key() == KeyBindings.down()) {
         return pos >= 3 ? 1 : pos + 1;
       }
     } else if (event instanceof PointerEvent pe) {
@@ -152,6 +149,7 @@ public final class Main {
     return pos;
   }
 
+  /* Affiche l'écran de fin de partie */
   private static void showLoseScreen(ApplicationContext context, int width, int height, long score) {
     int pos = 1;
     while (true) {
@@ -184,12 +182,13 @@ public final class Main {
   private static void game(ApplicationContext context) {
     var model = new Model();
     var viewers = new Viewers();
+    // ajout des differents mini jeu
     addGame(model, viewers, new Balance(), 0, BalanceView::new);
-    addGame(model, viewers, new Avoid(), 5, AvoidView::new);
-    addGame(model, viewers, new Touch(), 10, TouchView::new);
-    addGame(model, viewers, new Fly(), 15, FlyView::new);
-    addGame(model, viewers, new Jump(), 20, JumpView::new);
-    addGame(model, viewers, new Circle(), 25, CircleView::new);
+    addGame(model, viewers, new Avoid(), 15, AvoidView::new);
+    addGame(model, viewers, new Touch(), 25, TouchView::new);
+    addGame(model, viewers, new Jump(), 35, JumpView::new);
+    addGame(model, viewers, new Fly(), 50, FlyView::new);
+    addGame(model, viewers, new Circle(), 65, CircleView::new);
 
     var view = new GeneralView(context, viewers);
     var controller = new Controller(model, view, context);
