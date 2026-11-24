@@ -46,6 +46,7 @@ public final class Controller {
     this.context = context;
     input = new Input();
     running = false;
+    super();
   }
 
   /**
