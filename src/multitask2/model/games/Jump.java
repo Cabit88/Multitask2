@@ -17,21 +17,32 @@ public final class Jump implements Game {
   public record Hole(double x, double width) {}
 
   private static final double PLAYER_X = 30;
-
+  
+  /* Hauteur du joueur au dessus du sol */
   private double height;
+  
+  /* Vitesse du joueur */
   private double velocity;
+  
+  /* Si joueur au sol */
   private boolean onGround;
+  
+  /* Liste des trous */
   private final List<Hole> holes;
+  
+  /* temps restant avant apparition du prochain trou */
   private double spawnTimer;
+  
   private final Random random;
 
   public Jump() {
     height = 0;
     velocity = 0;
     onGround = true;
-    holes = new ArrayList<>();
     spawnTimer = 2;
+    holes = new ArrayList<>();
     random = new Random();
+    super();
   }
 
   @Override
@@ -61,13 +72,14 @@ public final class Jump implements Game {
   }
 
   private void updateHoles(double dt, double difficulty) {
-    // fait arriver les trous vers le personnage
+    // fait arriver les trous vers le personnage de facon aleatoire
     spawnTimer -= dt;
     if (spawnTimer <= 0) {
-      holes.add(new Hole(WIDTH, 6 + random.nextInt(5)));
-      spawnTimer = Math.max(1.8, 3.2 - difficulty * 0.08);
+      holes.add(new Hole(WIDTH, 5 + random.nextInt(8)));
+      var baseDelay = Math.max(0.8, 1.8 - difficulty * 0.06);
+      spawnTimer = baseDelay + random.nextDouble() * Math.max(1.2, 2.6 - difficulty * 0.08);
     }
-    holes.replaceAll(hole -> new Hole(hole.x() - (22 + difficulty * 3) * dt, hole.width()));
+    holes.replaceAll(hole -> new Hole(hole.x() - ((20 + random.nextInt(9)) + difficulty * 3) * dt, hole.width()));
     holes.removeIf(hole -> hole.x() + hole.width() < 0);
   }
 
@@ -80,6 +92,11 @@ public final class Jump implements Game {
     return false;
   }
 
-  public double height() { return height; }
-  public List<Hole> holes() { return Collections.unmodifiableList(holes); }
+  public double height() { 
+	  return height; 
+  }
+  
+  public List<Hole> holes() { 
+	  return Collections.unmodifiableList(holes);
+  }
 }
