@@ -1,10 +1,8 @@
 package multitask2.model.games;
 
-import com.github.forax.zen.KeyboardEvent.Key;
-
 import multitask2.controller.Input;
-import multitask2.controller.KeyBindings;
 import multitask2.model.Game;
+import multitask2.controller.KeyBindings;
 
 /**
  * Mini-jeu d'équilibre : le joueur incline une planche et doit empêcher une
@@ -18,7 +16,7 @@ import multitask2.model.Game;
  */
 public final class Balance implements Game {
 
-  /** Demi-longueur de la piste, en unités du modèle. */
+	  /** Demi-longueur de la piste, en unités du modèle. */
   public static final double TRACK_HALF_LENGTH = 50;
   /** Valeur absolue maximale de l'inclinaison de la planche, en degrés. */
   public static final double MAX_TILT_DEGREES = 35;
@@ -44,6 +42,7 @@ public final class Balance implements Game {
     position = 0;
     speed = 0;
     tilt = 0;
+    super();
   }
 
   /**
