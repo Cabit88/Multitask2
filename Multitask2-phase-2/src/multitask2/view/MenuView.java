@@ -132,7 +132,7 @@ public final class MenuView {
 	    var lines = new String[] {
 	    		"AIDE :",
 	    		"Balance : ← →, Garder une bille sur une planche que l’on incline.",
-	    		"Avoid : ↑ ↓, Esquiver des missiles sur l’une des cinq lignes.",
+	    		"Avoid : ↑ ↓, Esquiver des triangles qui arrivent sur l’une des cinq lignes.",
 	    		"Touch : ZQSD (AZERTY), Déplacer un carré pour toucher des blocs avant la fin de leur compte à rebours.",
 	    		"Fly : Espace, Maintenir la touche pour monter, la relˆacher pour descendre, et éviter les obstacles.",
 	    		"Jump : Maj, Sauter au bon moment par-dessus des trous dans le sol.",
